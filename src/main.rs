@@ -27,12 +27,12 @@ fn main() {
     match args.command {
         Some(Commands::Wiki { page }) => {
             let content = project3::get_wiki_content(&page);
-            println!("{}", content);
+            println!("{content}");
         }
         Some(Commands::Sumwiki { page }) => {
             let content = project3::get_wiki_content(&page);
             let summary = project3::summarize_content(&content);
-            println!("{}", summary);
+            println!("{summary}");
         }
         None => println!("No subcommand was used"),
     }
