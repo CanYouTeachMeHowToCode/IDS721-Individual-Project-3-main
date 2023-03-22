@@ -1,4 +1,4 @@
-// A command-line tool to search wikipedia and summarize the content both via subcommands
+// A command-line tool to search on wikipedia, summarize the found content and perform question answering based on the content
 use clap::Parser;
 
 #[derive(Parser)]
@@ -20,6 +20,12 @@ enum Commands {
         #[clap(short, long)]
         page: String,
     },
+    #[clap(version = "1.0", author = "Yilun Wu")]
+    Answerquestion {
+        #[clap(short, long)]
+        question: String,
+        page: String,
+    },
 }
 
 fn main() {
@@ -34,6 +40,10 @@ fn main() {
             let summary = project3::summarize_content(&content);
             println!("{summary}");
         }
-        None => println!("No subcommand was used"),
+        Some(Commands::Answerquestion { question, page }) => {
+            let answer = project3::question_answering(&question, &page);
+            println!("Answer: {answer}");
+        }
+        None => println!("No Command Given."),
     }
 }
