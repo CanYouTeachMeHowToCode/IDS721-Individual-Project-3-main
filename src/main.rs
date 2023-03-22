@@ -21,9 +21,8 @@ enum Commands {
         page: String,
     },
     #[clap(version = "1.0", author = "Yilun Wu")]
-    Answerquestion {
+    Keywords {
         #[clap(short, long)]
-        question: String,
         page: String,
     },
 }
@@ -40,9 +39,9 @@ fn main() {
             let summary = project3::summarize_content(&content);
             println!("{summary}");
         }
-        Some(Commands::Answerquestion { question, page }) => {
-            let answer = project3::question_answering(&question, &page);
-            println!("Answer: {answer}");
+        Some(Commands::Keywords { page }) => {
+            let keywords = project3::keyword_extraction(&page);
+            println!("Key words: {keywords:#?}");
         }
         None => println!("No Command Given."),
     }

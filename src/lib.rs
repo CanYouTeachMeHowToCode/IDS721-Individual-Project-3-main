@@ -1,7 +1,6 @@
-// A function that grabs the content from a wikipedia page using wikipedia-rs crate
 // Reference: https://github.com/noahgift/rust-mlops-template/blob/main/hfdemo
 extern crate wikipedia;
-use rust_bert::pipelines::question_answering::{QaInput, QuestionAnsweringModel};
+use rust_bert::pipelines::keywords_extraction::{KeywordExtractionConfig, KeywordExtractionModel};
 use rust_bert::pipelines::summarization::SummarizationModel;
 
 pub fn get_wiki_content(page: &str) -> String {
@@ -28,14 +27,26 @@ pub fn summarize_content(content: &str) -> String {
     output[0].clone()
 }
 
-pub fn question_answering(question: &str, page: &str) -> String {
+pub fn keyword_extraction(page: &str) -> Vec<String> {
     let content = get_wiki_content(page);
     let context = content.chars().collect::<String>().replace('\n', " "); // remove newlines with spaces
-    let qa_model = QuestionAnsweringModel::new(Default::default()).unwrap();
-    let input_qa = QaInput {
-        question: question.to_string(),
-        context,
+    let config = KeywordExtractionConfig {
+        num_keywords: 10,
+        ..Default::default()
     };
-    let output = qa_model.predict(&[input_qa], 1, 32);
-    output[0].iter().map(|x| x.answer.to_string()).collect()
+    let keyword_extraction_model = KeywordExtractionModel::new(config).unwrap();
+    let output = keyword_extraction_model.predict(&[context]);
+    // Convert the result to a vector of String
+    let keywords = match output {
+        Ok(keywords_vec) => keywords_vec
+            .into_iter()
+            .flatten()
+            .map(|keyword| keyword.text)
+            .collect(),
+        Err(err) => {
+            eprintln!("Error: {err:?}");
+            Vec::new()
+        }
+    };
+    keywords
 }
